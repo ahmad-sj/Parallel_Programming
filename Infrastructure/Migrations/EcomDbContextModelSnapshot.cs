@@ -168,6 +168,26 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Description = "High performance laptop",
+                            Name = "Gaming Laptop",
+                            Price = 4500.0,
+                            Qty = 10,
+                            RowVersion = new byte[0]
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Description = "Ergonomic mouse",
+                            Name = "Wireless Mouse",
+                            Price = 150.0,
+                            Qty = 50,
+                            RowVersion = new byte[0]
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>

@@ -19,5 +19,32 @@ namespace Infrastructure
         public DbSet<User> Users { get; set; }
 
         public EcomDbContext(DbContextOptions<EcomDbContext> options) : base(options) { }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Seed products
+            modelBuilder.Entity<Product>().HasData(
+                new Product
+                {
+                    Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                    Name = "Gaming Laptop",
+                    Description = "High performance laptop",
+                    Price = 4500.00,
+                    Qty = 10
+                },
+                new Product
+                {
+                    Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+                    Name = "Wireless Mouse",
+                    Description = "Ergonomic mouse",
+                    Price = 150.00,
+                    Qty = 50
+                }
+            );
+        }
     }
+
 }

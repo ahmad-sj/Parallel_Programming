@@ -1,18 +1,23 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using TanvirArjel.EFCore.GenericRepository;
-
+using Wolverine;
+using Wolverine;
+using Application.Notifications;
 namespace Application.Users.Carts
 {
     public class AddtoCartHandler
     {
         private readonly IRepository _repository;
+        private readonly IMessageBus _messageBus;
 
-        public AddtoCartHandler(IRepository repository)
+        public AddtoCartHandler(
+            IRepository repository,
+            IMessageBus messageBus)
         {
             _repository = repository;
+            _messageBus = messageBus;
         }
-
         public async Task<AddtoCartResult> Handle(AddtoCartCommand command)
         {
             try
@@ -61,7 +66,15 @@ namespace Application.Users.Carts
 
                 _repository.Update(product);
                 await _repository.SaveChangesAsync();
-
+                
+                
+                await _messageBus.PublishAsync(
+    new SendOrderNotificationCommand
+    {
+        UserId = command.UserId,
+        ProductName = command.ProductName,
+        Qty = command.Qty
+    });
                 return new AddtoCartResult
                 {
                     Id = command.ProductId,
