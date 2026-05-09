@@ -1,5 +1,6 @@
 ﻿using API.Contracts.Cart;
-using Application.Users.Carts;
+using Application.Users.Carts.AddToCart;
+using Application.Users.Carts.Checkout;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ using Wolverine;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class CartsController : ControllerBase
     {
@@ -37,6 +38,24 @@ namespace API.Controllers
             {
                 return BadRequest(ex.Message);
              }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Checkout([FromBody] CheckoutRequest request)
+        {
+            try
+            {
+                var result = await _messageBus.InvokeAsync<Order>(new CheckoutCommand
+                {
+                    UserId = request.UserId
+                });
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

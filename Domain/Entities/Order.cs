@@ -14,6 +14,20 @@ namespace Domain.Entities
         public PaymentMethodType PaymentMethod { get; set; }
         public bool Paid { get; set; }
         public Guid UsedrId { get; set; }
+
+        public static Order Create(Guid userId, List<OrderItem> orderItems, PaymentMethodType paymentMethod)
+        {
+            var order = new Order
+            {
+                Items = orderItems,
+                Date = DateTime.Now,
+                PaymentMethod = paymentMethod,
+                Paid = true,
+                UsedrId = userId
+            };
+
+            return order;
+        }
     }
 
     public enum PaymentMethodType

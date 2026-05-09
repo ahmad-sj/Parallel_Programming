@@ -1,4 +1,4 @@
-﻿namespace Application.Users.Carts
+﻿namespace Application.Users.Carts.AddToCart
 {
     public class AddtoCartResult
     {

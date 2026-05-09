@@ -53,13 +53,14 @@ public class Program
             app.UseSwaggerUI();
         }
 
-        app.UseRateLimiter();
+        //app.UseRateLimiter();
 
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
 
-        app.MapControllers().RequireRateLimiting("fixed");
+        //app.MapControllers().RequireRateLimiting("fixed");
+        app.MapControllers();
 
         app.Run();
     }

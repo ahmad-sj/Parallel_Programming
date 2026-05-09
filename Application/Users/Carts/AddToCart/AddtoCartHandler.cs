@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using TanvirArjel.EFCore.GenericRepository;
 
-namespace Application.Users.Carts
+namespace Application.Users.Carts.AddToCart
 {
     public class AddtoCartHandler
     {
@@ -31,7 +31,7 @@ namespace Application.Users.Carts
                     throw new Exception("Product stock is not sufficient");
                 }
 
-                await Task.Delay(10_000);
+                //await Task.Delay(10_000);
 
                 // deduct qty from stock
                 product.Qty -= command.Qty;

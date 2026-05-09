@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Users.Carts
+namespace Application.Users.Carts.AddToCart
 {
     public class AddtoCartCommand
     {
