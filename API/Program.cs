@@ -1,7 +1,12 @@
+﻿// ============================================================
+// Program.cs - الأسطر المضافة فقط (✅)
+// ============================================================
+
+using API.Services;
 using Application.Admin.Products.CreateProduct;
+using Application.Services;   // ← أضف هذا
 using Infrastructure;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.Options;
 using System.Threading.RateLimiting;
 using Wolverine;
 
@@ -13,30 +18,34 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
-
         builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddInfrastructure(builder.Configuration);
+
         builder.UseWolverine(opt =>
         {
             opt.Discovery.IncludeAssembly(typeof(CreateProductHandler).Assembly);
         });
 
+        // ✅ المتطلب 3
+        builder.Services.AddSingleton<OrderNotificationQueue>();
+        builder.Services.AddHostedService<OrderNotificationBackgroundService>();
+
+        // ✅ المتطلب 4
+        builder.Services.AddHostedService<DailySalesBatchJob>();
+
         builder.Services.AddRateLimiter(options =>
         {
             options.AddFixedWindowLimiter("fixed", opt =>
             {
-                opt.PermitLimit = 1; // max requests
-                opt.Window = TimeSpan.FromSeconds(10); // per time window
+                opt.PermitLimit = 100;
+                opt.Window = TimeSpan.FromSeconds(10);
                 opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                opt.QueueLimit = 0; // 0 = drop extra requests immediately
+                opt.QueueLimit = 50;
             });
 
-            // Optional: custom response when rejected
             options.OnRejected = async (context, token) =>
             {
                 context.HttpContext.Response.StatusCode = 429;
@@ -46,7 +55,6 @@ public class Program
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -54,11 +62,8 @@ public class Program
         }
 
         app.UseRateLimiter();
-
         app.UseHttpsRedirection();
-
         app.UseAuthorization();
-
         app.MapControllers().RequireRateLimiting("fixed");
 
         app.Run();

@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// ============================================================
+// المتطلب 4: تعديل بسيط مطلوب على OrderItem Entity
+// الملف: Domain/Entities/OrderItem.cs
+// ============================================================
+// أضف حقل UnitPrice حتى يعمل حساب الإيرادات في DailySalesBatchJob
 
-namespace Domain.Entities
+namespace Domain.Entities;
+
+public class OrderItem
 {
-    public class OrderItem
-    {
-        public Guid Id { get; set; }
-        public Guid ProductId { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public double Price { get; set; }
-        public int Qty { get; set; }
+    public Guid Id { get; set; }
+    public Guid OrderId { get; set; }
+    public Order Order { get; set; } = null!;
 
-        // Navigational
-        public Order Order { get; set; } = null!;
-        public Guid OrderId { get; set; }
-    }
+    public Guid ProductId { get; set; }
+    public string ProductName { get; set; } = string.Empty;
+    public int Qty { get; set; }
+
+    // ✅ مطلوب للـ Batch Job حتى يحسب الإيرادات
+    public double UnitPrice { get; set; }
 }
