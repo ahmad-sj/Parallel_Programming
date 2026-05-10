@@ -1,4 +1,5 @@
 using Application.Admin.Products.CreateProduct;
+using Application.Services;
 using Infrastructure;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
@@ -19,6 +20,7 @@ public class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddScoped<OrderSalesProcesser>();
 
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.UseWolverine(opt =>

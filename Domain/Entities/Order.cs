@@ -28,6 +28,12 @@ namespace Domain.Entities
 
             return order;
         }
+
+        public double GetTotalPrice()
+        {
+            return Items.Sum(i => i.Price * i.Qty);
+            //return 1000;
+        }
     }
 
     public enum PaymentMethodType
