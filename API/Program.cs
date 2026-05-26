@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using System.Threading.RateLimiting;
 using Wolverine;
+using Wolverine.SqlServer;
 
 namespace API;
 
@@ -26,7 +27,13 @@ public class Program
         builder.UseWolverine(opt =>
         {
             opt.Discovery.IncludeAssembly(typeof(CreateProductHandler).Assembly);
+
+            //opt.PersistMessagesWithSqlServer();
+
+            //opt.Policies.UseDurableLocalQueues();
         });
+
+        //builder.Host.UseResourceSetupOnStartup();
 
         builder.Services.AddRateLimiter(options =>
         {

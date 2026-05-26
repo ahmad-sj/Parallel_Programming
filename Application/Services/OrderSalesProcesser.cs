@@ -24,7 +24,11 @@ public class OrderSalesProcesser
 
         Console.WriteLine("\n" + timeWithMS + "\tBatches Creating Started");
 
-        const int batchSize = 5;
+        int totalOrders = await _repository.GetCountAsync<Order>();
+        Console.WriteLine("\n\tTotal orders count: " + totalOrders);
+
+        int batchSize = 5;
+        Console.WriteLine("\n\tBatch size: " + batchSize);
 
         int page = 0;
         double total = 0;

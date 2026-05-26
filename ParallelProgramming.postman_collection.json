@@ -1,0 +1,204 @@
+{
+  "info": {
+    "_postman_id": "46de6827-793a-4d6f-8b59-36c5d2b76337",
+    "name": "ParallelProgramming",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "35111053"
+  },
+  "item": [
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"userName\": \"user4\",\r\n  \"email\": \"user4@gmail.com\",\r\n  \"password\": \"user4pass\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://localhost:7164/api/Auth",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7164",
+          "path": [
+            "api",
+            "Auth"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add To Cart",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"userId\": \"2c6ef937-1427-45a0-b0e1-08de9f91766a\",\r\n  \"productId\": \"9ce83239-48b0-4065-d25a-08deacfbe6ab\",\r\n  \"productName\": \"Samsung Mobile\",\r\n  \"qty\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://localhost:7164/api/Carts/addtocart",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7164",
+          "path": [
+            "api",
+            "Carts",
+            "addtocart"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add Product",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Samsung Galaxy S26 Ultra\",\r\n  \"description\": \"1TB storage, 16GB RAM\",\r\n  \"price\": 1500,\r\n  \"qty\": 10\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://localhost:7164/api/Product/AddProduct",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7164",
+          "path": [
+            "api",
+            "Product",
+            "AddProduct"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Checkout",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"userId\": \"2c6ef937-1427-45a0-b0e1-08de9f91766a\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://localhost:7164/api/carts/checkout",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7164",
+          "path": [
+            "api",
+            "carts",
+            "checkout"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Product",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"productId\" : \"9ce83239-48b0-4065-d25a-08deacfbe6ab\",\r\n    \"productQty\" : 30\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://localhost:7164/api/Product/UpdateProduct",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7164",
+          "path": [
+            "api",
+            "Product",
+            "UpdateProduct"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "RunBatch",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "https://localhost:7164/api/Batch/Run",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7164",
+          "path": [
+            "api",
+            "Batch",
+            "Run"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
