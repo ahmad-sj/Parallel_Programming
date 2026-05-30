@@ -55,6 +55,8 @@ public class Program
 
         var app = builder.Build();
 
+        app.MigrateAsync().Wait();
+
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
@@ -64,7 +66,12 @@ public class Program
 
         //app.UseRateLimiter();
 
-        app.UseHttpsRedirection();
+        bool isDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+
+        if (!isDocker)
+        {
+            app.UseHttpsRedirection();
+        }
 
         app.UseAuthorization();
 

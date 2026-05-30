@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,9 +20,19 @@ namespace Infrastructure
 
         private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<EcomDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-                //.AddIdentity<User, IdentityRole>();
+            services.AddDbContext<EcomDbContext>(options => options.UseSqlServer(
+                configuration.GetConnectionString("DefaultConnection")
+                ));
+
+            //.AddIdentity<User, IdentityRole>();
             return services;
+        }
+
+        public static async Task MigrateAsync(this IApplicationBuilder builder)
+        {
+            using var scope = builder.ApplicationServices.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<EcomDbContext>();
+            await dbContext.Database.MigrateAsync();
         }
 
         private static IServiceCollection AddAppRepository(this IServiceCollection services)
