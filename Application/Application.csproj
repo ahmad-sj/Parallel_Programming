@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Admin\Products\RemoveProduct\" />
     <Folder Include="System\Orders\" />
   </ItemGroup>
 

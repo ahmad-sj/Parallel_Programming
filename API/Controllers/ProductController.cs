@@ -1,6 +1,8 @@
 ﻿using API.Contracts.Products;
 using Application.Admin.Products;
 using Application.Admin.Products.CreateProduct;
+using Application.Admin.Products.DeleteProduct;
+using Application.Admin.Products.GetProducts;
 using Application.Admin.Products.UpdateProduct;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -20,7 +22,7 @@ namespace API.Controllers
             _messageBus = messageBus;
         }
 
-        
+
         [HttpPost]
         public async Task<ActionResult<Product>> AddProduct([FromBody] CreateProductRequest request)
         {
@@ -40,6 +42,19 @@ namespace API.Controllers
         {
             await _messageBus.InvokeAsync(new UpdateProductCommand(request.ProductId, request.ProductQty));
             return Ok("product quantity updated successfully");
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Product>>> GetProducts()
+        {
+            var result = await _messageBus.InvokeAsync<List<Product>>(new GetProductsCommand());
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        public async Task DeleteProduct([FromBody] DeleteProductRequest request)
+        {
+            await _messageBus.InvokeAsync(new DeleteProductCommand(request.Id));
         }
     }
 }

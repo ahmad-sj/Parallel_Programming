@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Admin.Products.GetProducts
+namespace Application.Admin.Products.GetProducts;
+
+public class GetProductsCommand
 {
-    internal class GetProductsCommand
-    {
-    }
 }
