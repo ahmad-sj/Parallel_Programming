@@ -1,5 +1,5 @@
 ﻿using API.Contracts.Auth;
-using Application.Admin.Products.CreateProduct;
+using Application.Admin.Products.AddProduct;
 using Application.Users.Auth;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;

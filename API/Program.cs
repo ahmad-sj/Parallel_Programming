@@ -1,4 +1,4 @@
-using Application.Admin.Products.CreateProduct;
+using Application.Admin.Products.AddProduct;
 using Application.Services;
 using Infrastructure;
 using Microsoft.AspNetCore.RateLimiting;
@@ -26,7 +26,7 @@ public class Program
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.UseWolverine(opt =>
         {
-            opt.Discovery.IncludeAssembly(typeof(CreateProductHandler).Assembly);
+            opt.Discovery.IncludeAssembly(typeof(AddProductHandler).Assembly);
 
             //opt.PersistMessagesWithSqlServer();
 
@@ -51,6 +51,14 @@ public class Program
                 context.HttpContext.Response.StatusCode = 429;
                 await context.HttpContext.Response.WriteAsync("Too many requests", token);
             };
+        });
+
+        var redisConnectionString = builder.Configuration.GetConnectionString("RedisConnection");
+
+        builder.Services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = redisConnectionString;
+            options.InstanceName = "EcomCache_"; // Prefix for keys stored in Redis
         });
 
         var app = builder.Build();

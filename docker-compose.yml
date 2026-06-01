@@ -12,15 +12,24 @@ services:
       - sqlserver_data:/var/opt/mssql
     restart: unless-stopped
 
+  redis:
+    image: redis:alpine
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
   api:
     build:
       context: .
       dockerfile: API/Dockerfile
     depends_on:
       - sqlserver
+      - redis
     environment:
       ASPNETCORE_ENVIRONMENT: Docker
       ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=ecomdb;User Id=sa;Password=P@ssw0rd123;TrustServerCertificate=True;Encrypt=False;"
+      ConnectionStrings__RedisConnection: "redis:6379"
     ports:
       - "8080"
     restart: unless-stopped
