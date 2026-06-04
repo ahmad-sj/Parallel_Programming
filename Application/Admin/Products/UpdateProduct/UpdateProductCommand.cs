@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Application.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Admin.Products.UpdateProduct;
 
-public class UpdateProductCommand
+public class UpdateProductCommand: ILockableCommand
 {
     public Guid ProductId { get; set; }
     public int ProductQty { get; set; }
@@ -16,4 +17,6 @@ public class UpdateProductCommand
         ProductId = productId;
         ProductQty = productQty;
     }
+
+    public string LockKey => $"product:{ProductId}";
 }

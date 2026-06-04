@@ -1,11 +1,16 @@
-using Application.Admin.Products.AddProduct;
+using API.Middlewares;
+using Application.Interfaces;
 using Application.Services;
 using Infrastructure;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.Options;
+using RedLockNet;
+using RedLockNet.SERedis;
+using RedLockNet.SERedis.Configuration;
+using StackExchange.Redis;
+using System.Reflection;
 using System.Threading.RateLimiting;
 using Wolverine;
-using Wolverine.SqlServer;
 
 namespace API;
 
@@ -23,17 +28,28 @@ public class Program
         builder.Services.AddSwaggerGen();
         builder.Services.AddScoped<OrderSalesProcesser>();
 
+        // ============================================================
+        // Dependency injection for Infrastructure services
+
         builder.Services.AddInfrastructure(builder.Configuration);
-        builder.UseWolverine(opt =>
+
+        // ============================================================
+        // Wolverine configuration
+
+        builder.UseWolverine(opts =>
         {
-            opt.Discovery.IncludeAssembly(typeof(AddProductHandler).Assembly);
+            // To include handlers from the Application assembly
+            opts.Discovery.IncludeAssembly(Assembly.Load("Application"));
 
-            //opt.PersistMessagesWithSqlServer();
-
-            //opt.Policies.UseDurableLocalQueues();
+            // Apply the DistributedLockMiddleware to any handler
+            // where the command implements ILockableCommand interface 
+            opts.Policies
+            .ForMessagesOfType<ILockableCommand>()
+            .AddMiddleware(typeof(DistributedLockMiddleware));
         });
 
-        //builder.Host.UseResourceSetupOnStartup();
+        // ============================================================
+        // Rate Limiting configuration
 
         builder.Services.AddRateLimiter(options =>
         {
@@ -53,19 +69,68 @@ public class Program
             };
         });
 
+        // ============================================================
+        // Redis configuration for both caching and distributed locking
+
         var redisConnectionString = builder.Configuration.GetConnectionString("RedisConnection");
+
+        // Parse the string and disable immediate crashes on startup
+        var configOptions = ConfigurationOptions.Parse(redisConnectionString!);
+        configOptions.AbortOnConnectFail = false;
 
         builder.Services.AddStackExchangeRedisCache(options =>
         {
-            options.Configuration = redisConnectionString;
+            options.ConfigurationOptions = configOptions;
             options.InstanceName = "EcomCache_"; // Prefix for keys stored in Redis
         });
 
+        // Setup StackExchange.Redis ConnectionMultiplexer
+        var multiplexer = ConnectionMultiplexer.Connect(redisConnectionString!);
+
+        // Create the RedLock endpoints list
+        var endPoints = new List<RedLockMultiplexer> { multiplexer };
+
+        // Register as Singleton so Wolverine can fetch it during execution
+        builder.Services.AddSingleton<IDistributedLockFactory>(sp =>
+            RedLockFactory.Create(endPoints));
+
+        // ============================================================
+
         var app = builder.Build();
+
+        // Configure the HTTP request pipeline.
 
         app.MigrateAsync().Wait();
 
-        // Configure the HTTP request pipeline.
+        // Global exception handling middleware
+        app.UseExceptionHandler(errorApp =>
+        {
+            errorApp.Run(async context =>
+            {
+                var exception =
+                    context.Features.Get<IExceptionHandlerFeature>()?.Error;
+
+                if (exception is ResourceLockedException)
+                {
+                    context.Response.StatusCode = StatusCodes.Status423Locked;
+
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        error = exception.Message
+                    });
+
+                    return;
+                }
+
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+                await context.Response.WriteAsJsonAsync(new
+                {
+                    error = "Unexpected error"
+                });
+            });
+        });
+
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -84,6 +149,7 @@ public class Program
         app.UseAuthorization();
 
         //app.MapControllers().RequireRateLimiting("fixed");
+
         app.MapControllers();
 
         app.Run();

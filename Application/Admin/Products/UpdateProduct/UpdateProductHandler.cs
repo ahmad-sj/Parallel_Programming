@@ -19,6 +19,10 @@ public class UpdateProductHandler
 
     public async Task Handle(UpdateProductCommand command)
     {
+        Console.WriteLine("Updating product ...");
+
+        await Task.Delay(2000);
+
         var product = await _repository.GetAsync<Product>(p => p.Id == command.ProductId);
 
         product.Qty = command.ProductQty;
