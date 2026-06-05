@@ -1,13 +1,9 @@
-using API.Middlewares;
 using Application.Interfaces;
 using Application.Services;
 using Infrastructure;
+using Infrastructure.Middlewares;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.RateLimiting;
-using RedLockNet;
-using RedLockNet.SERedis;
-using RedLockNet.SERedis.Configuration;
-using StackExchange.Redis;
 using System.Reflection;
 using System.Threading.RateLimiting;
 using Wolverine;
@@ -68,31 +64,7 @@ public class Program
                 await context.HttpContext.Response.WriteAsync("Too many requests", token);
             };
         });
-
-        // ============================================================
-        // Redis configuration for both caching and distributed locking
-
-        var redisConnectionString = builder.Configuration.GetConnectionString("RedisConnection");
-
-        // Parse the string and disable immediate crashes on startup
-        var configOptions = ConfigurationOptions.Parse(redisConnectionString!);
-        configOptions.AbortOnConnectFail = false;
-
-        builder.Services.AddStackExchangeRedisCache(options =>
-        {
-            options.ConfigurationOptions = configOptions;
-            options.InstanceName = "EcomCache_"; // Prefix for keys stored in Redis
-        });
-
-        // Setup StackExchange.Redis ConnectionMultiplexer
-        var multiplexer = ConnectionMultiplexer.Connect(redisConnectionString!);
-
-        // Create the RedLock endpoints list
-        var endPoints = new List<RedLockMultiplexer> { multiplexer };
-
-        // Register as Singleton so Wolverine can fetch it during execution
-        builder.Services.AddSingleton<IDistributedLockFactory>(sp =>
-            RedLockFactory.Create(endPoints));
+  
 
         // ============================================================
 

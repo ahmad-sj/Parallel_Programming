@@ -1,4 +1,4 @@
-﻿namespace API.Middlewares;
+﻿namespace Infrastructure.Middlewares;
 
 using Application.Interfaces;
 using RedLockNet;
