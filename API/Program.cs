@@ -1,11 +1,12 @@
-using Application.Admin.Products.AddProduct;
+using Application.Interfaces;
 using Application.Services;
 using Infrastructure;
+using Infrastructure.Middlewares;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.Options;
+using System.Reflection;
 using System.Threading.RateLimiting;
 using Wolverine;
-using Wolverine.SqlServer;
 
 namespace API;
 
@@ -23,17 +24,28 @@ public class Program
         builder.Services.AddSwaggerGen();
         builder.Services.AddScoped<OrderSalesProcesser>();
 
+        // ============================================================
+        // Dependency injection for Infrastructure services
+
         builder.Services.AddInfrastructure(builder.Configuration);
-        builder.UseWolverine(opt =>
+
+        // ============================================================
+        // Wolverine configuration
+
+        builder.UseWolverine(opts =>
         {
-            opt.Discovery.IncludeAssembly(typeof(AddProductHandler).Assembly);
+            // To include handlers from the Application assembly
+            opts.Discovery.IncludeAssembly(Assembly.Load("Application"));
 
-            //opt.PersistMessagesWithSqlServer();
-
-            //opt.Policies.UseDurableLocalQueues();
+            // Apply the DistributedLockMiddleware to any handler
+            // where the command implements ILockableCommand interface 
+            opts.Policies
+            .ForMessagesOfType<ILockableCommand>()
+            .AddMiddleware(typeof(DistributedLockMiddleware));
         });
 
-        //builder.Host.UseResourceSetupOnStartup();
+        // ============================================================
+        // Rate Limiting configuration
 
         builder.Services.AddRateLimiter(options =>
         {
@@ -52,20 +64,45 @@ public class Program
                 await context.HttpContext.Response.WriteAsync("Too many requests", token);
             };
         });
+  
 
-        var redisConnectionString = builder.Configuration.GetConnectionString("RedisConnection");
-
-        builder.Services.AddStackExchangeRedisCache(options =>
-        {
-            options.Configuration = redisConnectionString;
-            options.InstanceName = "EcomCache_"; // Prefix for keys stored in Redis
-        });
+        // ============================================================
 
         var app = builder.Build();
 
+        // Configure the HTTP request pipeline.
+
         app.MigrateAsync().Wait();
 
-        // Configure the HTTP request pipeline.
+        // Global exception handling middleware
+        app.UseExceptionHandler(errorApp =>
+        {
+            errorApp.Run(async context =>
+            {
+                var exception =
+                    context.Features.Get<IExceptionHandlerFeature>()?.Error;
+
+                if (exception is ResourceLockedException)
+                {
+                    context.Response.StatusCode = StatusCodes.Status423Locked;
+
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        error = exception.Message
+                    });
+
+                    return;
+                }
+
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+                await context.Response.WriteAsJsonAsync(new
+                {
+                    error = "Unexpected error"
+                });
+            });
+        });
+
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -84,6 +121,7 @@ public class Program
         app.UseAuthorization();
 
         //app.MapControllers().RequireRateLimiting("fixed");
+
         app.MapControllers();
 
         app.Run();
