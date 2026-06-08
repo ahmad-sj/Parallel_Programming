@@ -1,6 +1,6 @@
 ﻿using API.Contracts.Cart;
-using Application.Users.Carts.AddToCart;
-using Application.Users.Carts.Checkout;
+using Application.Usecases.Users.Carts.AddToCart;
+using Application.Usecases.Users.Carts.Checkout;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +37,7 @@ namespace API.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-             }
+            }
         }
 
         [HttpPost]
@@ -47,7 +47,8 @@ namespace API.Controllers
             {
                 var result = await _messageBus.InvokeAsync<Order>(new CheckoutCommand
                 {
-                    UserId = request.UserId
+                    UserId = request.UserId,
+                    PaymentSuccess = request.PaymentSuccess
                 });
 
                 return Ok(result);

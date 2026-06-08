@@ -1,10 +1,9 @@
 ﻿using API.Contracts.Products;
-using Application.Admin.Products;
-using Application.Admin.Products.AddProduct;
-using Application.Admin.Products.AddProducts;
-using Application.Admin.Products.DeleteProduct;
-using Application.Admin.Products.GetProducts;
-using Application.Admin.Products.UpdateProduct;
+using Application.Usecases.Admin.Products.AddProduct;
+using Application.Usecases.Admin.Products.AddProducts;
+using Application.Usecases.Admin.Products.DeleteProduct;
+using Application.Usecases.Admin.Products.GetProducts;
+using Application.Usecases.Admin.Products.UpdateProduct;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;

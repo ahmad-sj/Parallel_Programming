@@ -1,5 +1,6 @@
 ﻿namespace Infrastructure.Middlewares;
 
+using Application;
 using Application.Interfaces;
 using RedLockNet;
 using Wolverine;
@@ -34,12 +35,12 @@ public static class DistributedLockMiddleware
 
         if (!redLock.IsAcquired)
         {
-            Console.WriteLine($"[{Environment.MachineName}] Lock busy for: '{resourceKey}'. Skipping.");
+            Helpers.PrintTimestamp($"[{Environment.MachineName}] Distributed Lock busy for: '{resourceKey}'. Skipping.");
             return (HandlerContinuation.Stop, null);
             //throw new ResourceLockedException(resourceKey);
         }
 
-        Console.WriteLine($"[{Environment.MachineName}] Lock ACQUIRED for: '{resourceKey}'");
+        Helpers.PrintTimestamp($"[{Environment.MachineName}] Distributed Lock ACQUIRED for: '{resourceKey}'");
         return (HandlerContinuation.Continue, new RedisLockToken(redLock));
     }
 
@@ -48,7 +49,7 @@ public static class DistributedLockMiddleware
         if (token != null)
         {
             await token.Lock.DisposeAsync();
-            Console.WriteLine($"[{Environment.MachineName}] Lock RELEASED.");
+            Helpers.PrintTimestamp($"[{Environment.MachineName}] Distributed Lock RELEASED.");
         }
     }
 }
@@ -57,7 +58,7 @@ public static class DistributedLockMiddleware
 public class ResourceLockedException : Exception
 {
     public ResourceLockedException(string resourceKey)
-        : base($"Resource '{resourceKey}' is currently locked.")
+        : base($"Resource '{resourceKey}' is currently locked distributedly.")
     {
     }
 }

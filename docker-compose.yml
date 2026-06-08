@@ -3,14 +3,20 @@ services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2025-latest
     container_name: sqlserver
+    user: root
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: "P@ssw0rd123"
     ports:
       - "1443:1433"
     volumes:
-      - sqlserver_data:/var/opt/mssql
+      - sqlserver_data:/var/opt/mssql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-C", "-S", "localhost", "-U", "sa", "-P", "P@ssw0rd123", "-Q", "SELECT 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   redis:
     image: redis:alpine
@@ -24,8 +30,10 @@ services:
       context: .
       dockerfile: API/Dockerfile
     depends_on:
-      - sqlserver
-      - redis
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_started
     environment:
       ASPNETCORE_ENVIRONMENT: Docker
       ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=ecomdb;User Id=sa;Password=P@ssw0rd123;TrustServerCertificate=True;Encrypt=False;"

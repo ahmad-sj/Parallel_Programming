@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,9 @@ namespace Domain.Entities
         public PaymentMethodType PaymentMethod { get; set; }
         public bool Paid { get; set; }
         public Guid UsedrId { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int SeqId { get; set; }
 
         public static Order Create(Guid userId, List<OrderItem> orderItems, PaymentMethodType paymentMethod)
         {
