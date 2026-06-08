@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="System\Orders\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Mapster" Version="10.0.7" />
     <PackageReference Include="TanvirArjel.EFCore.GenericRepository" Version="6.0.5" />
     <PackageReference Include="TanvirArjel.EFCore.QueryRepository" Version="1.5.4" />
