@@ -5,9 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Interfaces;
-
-public interface ILockableCommand
-{
+public interface ILockableCommand {
     string LockKey { get; }
 }
-

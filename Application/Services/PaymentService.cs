@@ -8,13 +8,13 @@ namespace Application.Services;
 
 public static class PaymentService
 {
-    public static async Task ProcessPayment(bool success)
+    public static async Task ProcessPayment(bool success, int time)
     {
         if (success)
         {
             Helpers.PrintTimestamp("Processing payment ...");
 
-            await Task.Delay(2000);
+            await Task.Delay(time);
 
             Helpers.PrintTimestamp("Payment Succeeded ✓");
         }
@@ -22,7 +22,7 @@ public static class PaymentService
         {
             Helpers.PrintTimestamp("Processing payment ...");
 
-            await Task.Delay(2000);
+            await Task.Delay(time);
 
             Helpers.PrintTimestamp("Payment Failed ✗");
 

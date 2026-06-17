@@ -4,14 +4,11 @@ namespace Domain.Entities
 {
     public class Cart
     {
-        public Guid Id { get; set; }
-        public Guid UserId { get; set; }
+        public int Id { get; set; }
+        public int UserId { get; set; }
         public ICollection<CartItem> Items { get; set; } = [];
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int SeqId { get; set; }
-
-        public static Cart Create(Guid userId)
+        public static Cart Create(int userId)
         {
             return new Cart
             {

@@ -18,8 +18,8 @@ public class AddProductHandler
 
     public async Task Before(AddProductCommand command)
     {
-        Helpers.PrintTimestamp("===================== Before Adding a Product =====================");
-        Helpers.PrintTimestamp("Processing AddProduct in SQL Server...");
+        //Helpers.PrintTimestamp("===================== Before Adding a Product =====================");
+        //Helpers.PrintTimestamp("Processing AddProduct in SQL Server...");
     }
 
     public async Task<Product> Handle(AddProductCommand command)
@@ -35,14 +35,16 @@ public class AddProductHandler
         await _repository.AddAsync(product);
         await _repository.SaveChangesAsync();
 
+        Helpers.PrintTimestamp($"Product '{product.Id}' added to SQL Server DB Successfully.");
+
         return product;
     }
 
     public async Task After(AddProductCommand command)
     {
-        Helpers.PrintTimestamp("===================== After Adding a Product ======================");
+        //Helpers.PrintTimestamp("===================== After Adding a Product ======================");
 
         await _cache.RemoveAsync(CacheKeys.GetProducts);
-        Helpers.PrintTimestamp($"Key '{CacheKeys.GetProducts}' has been cleared from Redis.");
+        //Helpers.PrintTimestamp($"Key '{CacheKeys.GetProducts}' has been cleared from Redis.");
     }
 }

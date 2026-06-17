@@ -2,7 +2,9 @@
 {
     public class CheckoutRequest
     {
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
         public bool PaymentSuccess { get; set; }
+
+        public int PaymentTime { get; set; }
     }
 }

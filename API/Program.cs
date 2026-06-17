@@ -1,5 +1,6 @@
+using API.Middleware;
 using Application.Interfaces;
-using Application.Services;
+using Application.Services.DailySales;
 using Infrastructure;
 using Infrastructure.Middlewares;
 using Microsoft.AspNetCore.Diagnostics;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using System.Reflection;
 using System.Threading.RateLimiting;
 using Wolverine;
+using Wolverine.SqlServer;
 
 namespace API;
 
@@ -22,7 +24,12 @@ public class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-        builder.Services.AddScoped<OrderSalesProcesser>();
+
+        // ============================================================
+        // Daily sales processors registration
+
+        builder.Services.AddScoped<DailySalesParallelProcesser>();
+        builder.Services.AddScoped<DailySalesSequentialProcessor>();
 
         // ============================================================
         // Dependency injection for Infrastructure services
@@ -34,8 +41,15 @@ public class Program
 
         builder.UseWolverine(opts =>
         {
+            opts.PersistMessagesWithSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!, "wolverine");
+
+            opts.Policies.UseDurableLocalQueues();
+
             // To include handlers from the Application assembly
             opts.Discovery.IncludeAssembly(Assembly.Load("Application"));
+
+            // Apply the PerformanceMonitoringMiddleware to all handlers
+            opts.Policies.AddMiddleware(typeof(PerformanceMonitoringMiddleware));
 
             // Apply the DistributedLockMiddleware to any handler
             // where the command implements ILockableCommand interface 
@@ -64,7 +78,7 @@ public class Program
                 await context.HttpContext.Response.WriteAsync("Too many requests", token);
             };
         });
-  
+
 
         // ============================================================
 
