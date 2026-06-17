@@ -8,10 +8,10 @@ namespace Application.Usecases.Admin.Products.DeleteProduct;
 
 public class DeleteProductCommand
 {
-    public DeleteProductCommand(Guid id)
+    public DeleteProductCommand(int id)
     {
         Id = id;
     }
 
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 }

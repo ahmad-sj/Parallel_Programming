@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace Application.Usecases.Users.Carts.Checkout;
 
-public class CheckoutCommand: ILockableCommand
+public class CheckoutCommand //: ILockableCommand
 {
-    public Guid UserId { get; set; }
+    public int UserId { get; set; }
     public bool PaymentSuccess { get; set; }
+    public int PaymentTime { get; set; }
 
     public string LockKey => $"checkout:user:{UserId}";
 }

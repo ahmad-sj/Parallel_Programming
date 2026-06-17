@@ -13,7 +13,7 @@ namespace API.Controllers
     {
 
         private readonly IMessageBus _messageBus;
-        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1,1);
+        //private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1,1);
 
         public AuthController(IMessageBus messageBus)
         {

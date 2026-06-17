@@ -5,36 +5,29 @@ using System.Text.Json;
 using TanvirArjel.EFCore.GenericRepository;
 
 namespace Application.Usecases.Admin.Products.GetProducts;
-
-public class GetProductsHandler
-{
+public class GetProductsHandler {
     private readonly IRepository _repository;
     private readonly IDistributedCache _cache;
-
     public GetProductsHandler(IRepository repository, IDistributedCache cache)
     {
         _repository = repository;
         _cache = cache;
     }
-
-    public async Task<List<Product>> Handle(GetProductsCommand command)
-    {
+    public async Task<List<Product>> Handle(GetProductsCommand command) {
         List<Product> products;
 
         // Try to get data from cache
         var cachedData = await _cache.GetStringAsync(CacheKeys.GetProducts);
-
         if (!string.IsNullOrEmpty(cachedData))
         {
-            Console.WriteLine($"[{Environment.MachineName}] Cache HIT - Returning data from Redis");
+            Helpers.PrintTimestamp("Cache HIT - Returning data from Redis");
             var deserializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             products = JsonSerializer.Deserialize<List<Product>>(cachedData, deserializerOptions) ?? new List<Product>();
             return products;
         }
 
-        Console.WriteLine($"[{Environment.MachineName}] Cache MISS - Fetching from SQL Server database");
-
         // Get data from database
+        Helpers.PrintTimestamp("Cache MISS - Fetching from SQL Server database");
         products = await _repository.GetListAsync<Product>();
 
         // Serialize and save to Redis with a 5-minute expiration time
@@ -50,9 +43,8 @@ public class GetProductsHandler
         };
 
         var serializedData = JsonSerializer.Serialize(products, serializerOptions);
-
         await _cache.SetStringAsync(CacheKeys.GetProducts, serializedData, cacheOptions);
-
         return products;
     }
 }
+

@@ -3,6 +3,7 @@ using Application.Usecases.Admin.Products.AddProduct;
 using Application.Usecases.Admin.Products.AddProducts;
 using Application.Usecases.Admin.Products.DeleteProduct;
 using Application.Usecases.Admin.Products.GetProducts;
+using Application.Usecases.Admin.Products.IncreaseProductStock;
 using Application.Usecases.Admin.Products.UpdateProduct;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<List<Product>>> AddProducts([FromBody] AddProductsRequest request)
         {
-            var addProductsCommand  = new AddProductsCommand
+            var addProductsCommand = new AddProductsCommand
             {
                 List = request.List.Select(p => new AddProductCommand
                 {
@@ -57,7 +58,7 @@ namespace API.Controllers
         public async Task<ActionResult<List<Product>>> GetProducts()
         {
             var result = await _messageBus.InvokeAsync<List<Product>>(new GetProductsCommand());
-           return Ok(result);
+            return Ok(result);
         }
 
         [HttpPut]
@@ -65,6 +66,23 @@ namespace API.Controllers
         {
             await _messageBus.InvokeAsync(new UpdateProductCommand(request.ProductId, request.ProductQty));
             return Ok("product quantity updated successfully");
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> IncreaseProductStock([FromBody] IncreaseProductStockRequest request)
+        {
+            var result = await _messageBus.InvokeAsync<IncreaseProductStockResult>(new IncreaseProductStockCommand
+            {
+                ProductId = request.ProductId,
+                IncreaseQty = request.IncreaseQty
+            });
+
+            if (result.NewQty == -1)
+            {
+                return BadRequest("Failed to increase product stock");
+            }
+
+            return Ok($"Product stock increased successfully. New stock: {result.NewQty}");
         }
 
         [HttpDelete]

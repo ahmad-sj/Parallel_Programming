@@ -8,10 +8,10 @@ namespace Application.Usecases.System.Emails;
 
 public class OrderConfirmationCommand
 {
-    public Guid UserId { get; set; }
-    public Guid OrderId { get; set; }
+    public int UserId { get; set; }
+    public int OrderId { get; set; }
 
-    public static OrderConfirmationCommand Create(Guid userId, Guid orderId)
+    public static OrderConfirmationCommand Create(int userId, int orderId)
     {
         return new OrderConfirmationCommand { UserId = userId, OrderId = orderId };
     }

@@ -28,7 +28,6 @@ namespace API.Controllers
                 {
                     UserId = request.UserId,
                     ProductId = request.ProductId,
-                    ProductName = request.ProductName,
                     Qty = request.Qty,
                 });
 
@@ -43,20 +42,17 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Checkout([FromBody] CheckoutRequest request)
         {
-            try
+            var result = await _messageBus.InvokeAsync<CheckoutResult>(new CheckoutCommand
             {
-                var result = await _messageBus.InvokeAsync<Order>(new CheckoutCommand
-                {
-                    UserId = request.UserId,
-                    PaymentSuccess = request.PaymentSuccess
-                });
+                UserId = request.UserId,
+                PaymentSuccess = request.PaymentSuccess,
+                PaymentTime = request.PaymentTime,
+            });
 
+            if (result.Success)
                 return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+
+            return BadRequest(result);
         }
     }
 }

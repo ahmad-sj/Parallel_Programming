@@ -2,15 +2,15 @@
 {
     public class AddtoCartResult
     {
-        public Guid CartId { get; set; }
-        public Guid UserId { get; set; }
+        public int CartId { get; set; }
+        public int UserId { get; set; }
         public List<AddtoCartItemResult> Items { get; set; } = [];
     }
 
     public class AddtoCartItemResult
     {
-        public Guid Id { get; set; }
-        public Guid ProductId { get; set; }
+        public int Id { get; set; }
+        public int ProductId { get; set; }
         public string ProductName { get; set; } = string.Empty;
         public int Qty { get; set; }
     }

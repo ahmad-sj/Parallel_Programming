@@ -8,12 +8,7 @@ namespace Application.Usecases.Users.Carts.Checkout;
 
 public class CheckoutResult
 {
-    public Guid OrderId { get; set; }
-    public string msg { get; set; }
-
-    public CheckoutResult(Guid orderId)
-    {
-        OrderId = orderId;
-        msg = "Order has been place successfully";
-    }
+    public int OrderId { get; set; }
+    public string Message { get; set; } = string.Empty;
+    public bool Success { get; set; } = false;
 }

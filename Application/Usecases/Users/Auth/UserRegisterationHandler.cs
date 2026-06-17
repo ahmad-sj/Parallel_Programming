@@ -6,20 +6,18 @@ namespace Application.Usecases.Users.Auth
     public class UserRegisterationHandler
     {
         private readonly IRepository _repository;
-        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        //private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(2, 2);
 
         public UserRegisterationHandler(IRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task Before(UserRegisterationCommand command)
-        {
-            //Helpers.PrintTimestamp("==================== Before User Regsiteration ====================");
-
-            //await _semaphore.WaitAsync();
-            //Helpers.PrintTimestamp("Slim Semaphore Acquired");
-        }
+        //public async Task Before(UserRegisterationCommand command)
+        //{
+        //    await _semaphore.WaitAsync();
+        //    Helpers.PrintTimestamp("Semaphore Acquired");
+        //}
 
         public async Task<User> Handle(UserRegisterationCommand command)
         {
@@ -28,21 +26,20 @@ namespace Application.Usecases.Users.Auth
                 UserName = command.UserName,
                 Email = command.Email
             };
-
             await _repository.AddAsync(user);
             await _repository.SaveChangesAsync();
-
-            Helpers.PrintTimestamp($"User '{user.SeqId}' Registered Successfully");
-
+            await Task.Delay(3000);
+            Helpers.PrintTimestamp($"User '{user.Id}' Registered Successfully");
             return user;
         }
 
-        public async Task Finally(UserRegisterationCommand command)
-        {
-            //Helpers.PrintTimestamp("==================== After User Regsiteration =====================");
-
-            //_semaphore.Release();
-            //Helpers.PrintTimestamp("Slim Semaphore Released");
-        }
+        //public async Task Finally(UserRegisterationCommand command)
+        //{
+        //    _semaphore.Release();
+        //    Helpers.PrintTimestamp("Semaphore Released");
+        //}
     }
 }
+
+
+

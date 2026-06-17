@@ -3,9 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities
 {
-    public class User : IdentityUser<Guid>
+    public class User : IdentityUser<int>
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int SeqId { get; set; }
     }
 }

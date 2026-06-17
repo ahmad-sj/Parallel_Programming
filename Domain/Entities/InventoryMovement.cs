@@ -8,8 +8,8 @@ namespace Domain.Entities
 {
     public class InventoryMovement
     {
-        public Guid Id { get; set; }
-        public Guid ProductId { get; set; }
+        public int Id { get; set; }
+        public int ProductId { get; set; }
         public DateTime Date { get; set; }
         public InventoryMovementType Type { get; set; }
         public int Qty { get; set; }

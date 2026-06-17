@@ -2,6 +2,6 @@
 
 public class UpdateProductRequest
 {
-    public Guid ProductId { get; set; }
+    public int ProductId { get; set; }
     public int ProductQty { get; set; }
 }

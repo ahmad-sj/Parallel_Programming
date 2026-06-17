@@ -9,17 +9,14 @@ namespace Domain.Entities
 {
     public class Order
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public ICollection<OrderItem> Items { get; set; } = null!;
         public DateTime Date { get; set; }
         public PaymentMethodType PaymentMethod { get; set; }
         public bool Paid { get; set; }
-        public Guid UsedrId { get; set; }
+        public int UsedrId { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int SeqId { get; set; }
-
-        public static Order Create(Guid userId, List<OrderItem> orderItems, PaymentMethodType paymentMethod)
+        public static Order Create(int userId, List<OrderItem> orderItems, PaymentMethodType paymentMethod)
         {
             var order = new Order
             {
